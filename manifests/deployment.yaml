@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: polling-server
+  namespace: course
+  labels:
+    app: polling-server
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: polling-server
+        ref: <CI_ENV>
+    spec:
+      restartPolicy: Always
+      imagePullPolicy: IfNotPresent
+      containers:
+      - image: registry.qikqiak.com/course/polling-server:<BUILD_TAG>
+        name: polling-server
+        imagePullSecrets:
+        - name: myreg
+        ports:
+        - containerPort: 8080
+          name: api
+        resources:
+          requests:
+            cpu: "25m"
+            memory: "64M"
+          limits:
+            cpu: "50m"
+            memory: "128M"
+        livenessProbe:
+          httpGet:
+            path: /api/_status/healthz
+            port: 8080
+          initialDelaySeconds: 90
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/_status/healthz
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        env:
+        - name: DB_HOST
+          value: localhost
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: polling_app
+        - name: DB_NAME
+          value: root
+        - name: DB_PASSWORD
+          value: root
+        
+      

@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: polling-server
+  namespace: course
+  labels:
+    ref: <CI_ENV>
+spec:
+  selector:
+    app: polling-server
+  type:  ClusterIP
+  ports:
+  - name: api-port
+    port: 8080
+    targetPort:  api
