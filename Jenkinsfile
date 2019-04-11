@@ -30,6 +30,7 @@ podTemplate(label: label, containers: [
           sh """
             pwd
             mvn clean package -Dmaven.test.skip=true
+            ls -la -h
             """
         }
       }
@@ -45,7 +46,8 @@ podTemplate(label: label, containers: [
           usernameVariable: 'DOCKER_HUB_USER',
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
-            docker info
+            pwd
+            ls -la -h
             docker login ${imageBaseUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${image}:${gitCommit} .
             docker push ${image}:${gitCommit}
