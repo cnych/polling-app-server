@@ -6,8 +6,8 @@ podTemplate(label: label, containers: [
   containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
 ], volumes: [
-  hostPathVolume(mountPath: '/root/.m2', hostPath: '/opt/myvolumes/m2'),
-  hostPathVolume(mountPath: '/root/.kube', hostPath: '/home/jenkins/.kube'),
+  hostPathVolume(mountPath: '/root/.m2', hostPath: '/var/run/m2'),
+  hostPathVolume(mountPath: '/home/jenkins/.kube', hostPath: '/root/.kube'),
   hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
 ]) {
   node(label) {
@@ -31,7 +31,7 @@ podTemplate(label: label, containers: [
           sh """
             pwd
             mvn clean package -Dmaven.test.skip=true
-            ls -la -h
+            ls -la target
             """
         }
       }
@@ -48,6 +48,7 @@ podTemplate(label: label, containers: [
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
             pwd
+            ls -la target
             ls -la -h
             docker login ${imageBaseUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${image}:${gitCommit} .
