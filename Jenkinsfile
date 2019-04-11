@@ -21,6 +21,7 @@ podTemplate(label: label, containers: [
  
     stage('Test') {
       echo "Test stage"
+      echo "${myRepo}"
       echo "${gitCommit}-${gitBranch}-${shortGitCommit}-${previousGitCommit}-${imageTag}-${image}"
     }
     stage('Build') {
