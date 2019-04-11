@@ -32,6 +32,7 @@ podTemplate(label: label, containers: [
           usernameVariable: 'DOCKER_HUB_USER',
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
+            docker info
             docker login ${imageBaseUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${image}:${gitCommit} .
             docker push ${image}:${gitCommit}
