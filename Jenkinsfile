@@ -3,8 +3,8 @@ def label = "worker-${UUID.randomUUID().toString()}"
 podTemplate(label: label, containers: [
   containerTemplate(name: 'maven', image: 'maven:3.6-alpine', command: 'cat', ttyEnabled: true),
   containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
-  containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
-  containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
+  containerTemplate(name: 'kubectl', image: 'cnych/kubectl', command: 'cat', ttyEnabled: true),
+  containerTemplate(name: 'helm', image: 'cnych/helm', command: 'cat', ttyEnabled: true)
 ], volumes: [
   hostPathVolume(mountPath: '/root/.m2', hostPath: '/var/run/m2'),
   hostPathVolume(mountPath: '/home/jenkins/.kube', hostPath: '/root/.kube'),
@@ -16,27 +16,27 @@ podTemplate(label: label, containers: [
     def gitBranch = myRepo.GIT_BRANCH
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
+    def imageTag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
     def imageBaseUrl = "registry.qikqiak.com"
     def image = "${imageBaseUrl}/course/polling-app-server"
  
     stage('Test') {
-      sh "pwd"
+      sh "Test stage"
       echo "Test stage"
       echo "${gitCommit}-${gitBranch}-${shortGitCommit}-${previousGitCommit}"
     }
     stage('Build') {
       echo "Build stage"
+      echo "${currentBuild}"
       try {
         container('maven') {
           sh """
-            pwd
             mvn clean package -Dmaven.test.skip=true
-            ls -la target
             """
         }
       }
       catch (exc) {
-        println "Failed to test - ${currentBuild.fullDisplayName}"
+        println "Failed to build - ${currentBuild.fullDisplayName}"
         throw(exc)
       }
     }
@@ -47,19 +47,18 @@ podTemplate(label: label, containers: [
           usernameVariable: 'DOCKER_HUB_USER',
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
-            pwd
-            ls -la target
-            ls -la -h
             docker login ${imageBaseUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker build -t ${image}:${gitCommit} .
+            docker build -t ${image}:${imageTag} .
+            docker tag ${image}:${imageTag} ${image}
             docker push ${image}:${gitCommit}
+            docker push ${image}
             """
         }
       }
     }
     stage('Run kubectl') {
       container('kubectl') {
-        sh "kubectl get pods"
+        sh "kubectl get pods --all-namespaces"
       }
     }
     stage('Run helm') {
