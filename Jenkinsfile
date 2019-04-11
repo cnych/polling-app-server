@@ -17,6 +17,8 @@ podTemplate(label: label, containers: [
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
     def imageTag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+    def dockerRegistryUrl = "registry.qikqiak.com"
+    def imageEndpoint = "course/polling-app-server"
     def image = "${dockerRegistryUrl}/${imageEndpoint}"
  
     stage('Test') {
