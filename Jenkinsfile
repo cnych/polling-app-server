@@ -49,7 +49,7 @@ podTemplate(label: label, containers: [
             docker login ${dockerRegistryUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${image}:${imageTag} .
             docker tag ${image}:${imageTag} ${image}
-            docker push ${image}:${gitCommit}
+            docker push ${image}:${imageTag}
             docker push ${image}
             """
         }
