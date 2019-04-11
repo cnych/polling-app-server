@@ -17,13 +17,11 @@ podTemplate(label: label, containers: [
     def shortGitCommit = "${gitCommit[0..10]}"
     def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
     def imageTag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-    def imageBaseUrl = "registry.qikqiak.com"
-    def image = "${imageBaseUrl}/course/polling-app-server"
+    def image = "${dockerRegistryUrl}/${imageEndpoint}"
  
     stage('Test') {
-      sh "Test stage"
       echo "Test stage"
-      echo "${gitCommit}-${gitBranch}-${shortGitCommit}-${previousGitCommit}"
+      echo "${gitCommit}-${gitBranch}-${shortGitCommit}-${previousGitCommit}-${imageTag}-${image}"
     }
     stage('Build') {
       echo "Build stage"
@@ -47,7 +45,7 @@ podTemplate(label: label, containers: [
           usernameVariable: 'DOCKER_HUB_USER',
           passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           sh """
-            docker login ${imageBaseUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+            docker login ${dockerRegistryUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${image}:${imageTag} .
             docker tag ${image}:${imageTag} ${image}
             docker push ${image}:${gitCommit}
