@@ -1,4 +1,4 @@
-def label = "worker-${UUID.randomUUID().toString()}"
+def label = "slave-${UUID.randomUUID().toString()}"
 
 podTemplate(label: label, containers: [
   containerTemplate(name: 'maven', image: 'maven:3.6-alpine', command: 'cat', ttyEnabled: true),
@@ -14,56 +14,29 @@ podTemplate(label: label, containers: [
     def myRepo = checkout scm
     def gitCommit = myRepo.GIT_COMMIT
     def gitBranch = myRepo.GIT_BRANCH
-    def shortGitCommit = "${gitCommit[0..10]}"
-    def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
-    def imageTag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-    def dockerRegistryUrl = "registry.qikqiak.com"
-    def imageEndpoint = "course/polling-app-server"
-    def image = "${dockerRegistryUrl}/${imageEndpoint}"
  
-    stage('Test') {
-      echo "Test stage"
-      echo "${myRepo}"
-      echo "${gitCommit}-${gitBranch}-${shortGitCommit}-${previousGitCommit}-${imageTag}-${image}"
+    stage('单元测试') {
+      echo "测试阶段"
     }
-    stage('Build') {
-      echo "Build stage"
-      echo "${currentBuild}"
-      try {
-        container('maven') {
-          sh """
-            mvn clean package -Dmaven.test.skip=true
-            """
-        }
-      }
-      catch (exc) {
-        println "Failed to build - ${currentBuild.fullDisplayName}"
-        throw(exc)
+    stage('代码编译打包') {
+      container('maven') {
+        echo "打码编译打包阶段"
       }
     }
-    stage('Create Docker images') {
+    stage('构建 Docker 镜像') {
       container('docker') {
-        withCredentials([[$class: 'UsernamePasswordMultiBinding',
-          credentialsId: 'dockerhub',
-          usernameVariable: 'DOCKER_HUB_USER',
-          passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
-          sh """
-            docker login ${dockerRegistryUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker build -t ${image}:${imageTag} .
-            docker tag ${image}:${imageTag} ${image}
-            docker push ${image}:${imageTag}
-            docker push ${image}
-            """
-        }
+        echo "构建 Docker 镜像阶段"
       }
     }
-    stage('Run kubectl') {
+    stage('运行 Kubectl') {
       container('kubectl') {
-        sh "kubectl get pods --all-namespaces"
+        echo "查看 K8S 集群 Pod 列表"
+        sh "kubectl get pods"
       }
     }
-    stage('Run helm') {
+    stage('运行 Helm') {
       container('helm') {
+        echo "查看 Helm Release 列表"
         sh "helm list"
       }
     }
