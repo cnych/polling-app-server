@@ -11,11 +11,10 @@ podTemplate(label: label, containers: [
   hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
 ]) {
   node(label) {
-    deleteDir()
     def myRepo = checkout scm
     def gitCommit = myRepo.GIT_COMMIT
     def gitBranch = myRepo.GIT_BRANCH
- 
+
     stage('单元测试') {
       echo "测试阶段"
     }
@@ -26,12 +25,12 @@ podTemplate(label: label, containers: [
     }
     stage('构建 Docker 镜像') {
       container('docker') {
-        echo "构建 Docker 镜像阶段"
+        echo "构建 Docker 镜像阶段"
       }
     }
     stage('运行 Kubectl') {
       container('kubectl') {
-        echo "查看 K8S 集群 Pod 列表"
+        echo "查看 K8S 集群 Pod 列表"
         sh "kubectl get pods"
       }
     }
