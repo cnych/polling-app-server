@@ -1,7 +1,7 @@
 # polling-app-server
 Full Stack Polls App built using Spring Boot, Spring Security, JWT, React, and Ant Design to CI/CD Demo project
 
-this project is based on [https://github.com/callicoder/spring-security-react-ant-design-polls-app](https://github.com/callicoder/spring-security-react-ant-design-polls-app)
+This project is based on [https://github.com/callicoder/spring-security-react-ant-design-polls-app](https://github.com/callicoder/spring-security-react-ant-design-polls-app)
 
 Mainly used to demonstrate a complete CI/CD process based on Jenkins, Harbor, Gitlab, Helm, Kubernetes
 
@@ -9,4 +9,3 @@ Mainly used to demonstrate a complete CI/CD process based on Jenkins, Harbor, Gi
 
 ![polling app1](https://ws1.sinaimg.cn/large/006tNc79gy1g1yswhj7p0j30vz0u076x.jpg)
 
-![polling app2](https://ws2.sinaimg.cn/large/006tNc79gy1g1ysxfz405j30ye0u0gnn.jpg)
