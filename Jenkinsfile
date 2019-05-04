@@ -93,13 +93,13 @@ podTemplate(label: label, containers: [
             echo "4. [INFO] 开始 Helm 部署"
             helmDeploy(
                 dry_run     : false,
-                name        : 'polling',
-                chartDir    : 'polling',
-                namespace   : 'course',
-                tag         : ${imageTag},
-                image       : ${image},
-                username:   ${DOCKER_HUB_USER},
-                password:   ${DOCKER_HUB_PASSWORD}
+                name        : "polling",
+                chartDir    : "polling",
+                namespace   : "course",
+                tag         : "${imageTag}",
+                image       : "${image}",
+                username    : "${DOCKER_HUB_USER}",
+                password    : "${DOCKER_HUB_PASSWORD}"
             )
             echo "[INFO] Helm 部署应用成功..."
           }
