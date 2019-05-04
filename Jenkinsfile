@@ -9,7 +9,7 @@ def helmInit() {
   sh "helm init --client-only --stable-repo-url https://mirror.azure.cn/kubernetes/charts/"
 }
 
-def helmRepo() {
+def helmRepo(Map args) {
   println "添加 course repo"
   sh "helm repo add --username ${args.username} --password ${args.password} course https://registry.qikqiak.com/chartrepo/course"
 
@@ -19,7 +19,7 @@ def helmRepo() {
 
 def helmDeploy(Map args) {
     helmInit()
-    helmRepo()
+    helmRepo(args)
 
     println "获取 Chart 包"
     sh """
@@ -90,15 +90,16 @@ podTemplate(label: label, containers: [
         usernameVariable: 'DOCKER_HUB_USER',
         passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
           container('helm') {
-            echo "[INFO] 开始 Helm 部署"
-            // Deploy using Helm chart
+            echo "4. [INFO] 开始 Helm 部署"
             helmDeploy(
-                dry_run       : false,
-                name          : 'polling',
-                chartDir      : 'polling',
-                namespace     : 'course',
-                tag           : ${imageTag},
-                image         : ${image}
+                dry_run     : false,
+                name        : 'polling',
+                chartDir    : 'polling',
+                namespace   : 'course',
+                tag         : ${imageTag},
+                image       : ${image},
+                username:   ${DOCKER_HUB_USER},
+                password:   ${DOCKER_HUB_PASSWORD}
             )
             echo "[INFO] Helm 部署应用成功..."
           }
