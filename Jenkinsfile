@@ -52,7 +52,7 @@ podTemplate(label: label, containers: [
         echo "4.1 查看 Helm Release 列表"
         sh "helm list"
         echo "4.2 初始化helm client"
-        sh "helm init --client-only"
+        sh "helm init --client-only --stable-repo-url https://mirror.azure.cn/kubernetes/charts/"
         echo "4.3 如果更新了chart包则需要更新repo"
         sh "helm repo update"
         echo "4.4 获取chart包"
