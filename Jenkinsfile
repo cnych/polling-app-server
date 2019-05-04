@@ -37,12 +37,14 @@ podTemplate(label: label, containers: [
         credentialsId: 'dockerhub',
         usernameVariable: 'DOCKER_HUB_USER',
         passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
-          echo "3. 构建 Docker 镜像阶段"
-          sh """
-            docker login ${dockerRegistryUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-            docker build -t ${image}:${imageTag} .
-            docker push ${image}:${imageTag}
-            """
+          container('docker') {
+            echo "3. 构建 Docker 镜像阶段"
+            sh """
+              docker login ${dockerRegistryUrl} -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+              docker build -t ${image}:${imageTag} .
+              docker push ${image}:${imageTag}
+              """
+          }
       }
     }
     stage('运行 Helm') {
