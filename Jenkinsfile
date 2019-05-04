@@ -65,7 +65,7 @@ podTemplate(label: label, containers: [
             sh "tar -xzvf polling-0.1.0.tgz"
             echo "4.5 更新 polling 应用"
             sh """
-              helm upgrade --install polling polling --set persistence.persistentVolumeClaim.database.storageClass=database --set database.type=internal --set database.internal.database=polling --set database.internal.username=polling --set database.internal.password=polling321 --set api.image.repository=${image} --set api.image.tag=${imageTag} --set api.image.pullSecret=myreg --namespace course
+              helm upgrade --install polling polling --set persistence.persistentVolumeClaim.database.storageClass=database --set database.type=internal --set database.internal.database=polling --set database.internal.username=polling --set database.internal.password=polling321 --set api.image.repository=${image} --set api.image.tag=${imageTag} --set imagePullSecrets[0].name=myreg --namespace course
             """
           }
       }
