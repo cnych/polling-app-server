@@ -52,8 +52,6 @@ podTemplate(label: label, containers: [
         echo "4.查看 Helm Release 列表"
         sh "helm list"
         echo "如果更新了chart包则需要更新repo"
-        sh "helm repo update"
-        echo "获取chart包"
         sh "helm fetch course/polling"
         sh "tar -xzvf polling-0.1.0.tgz"
         echo "更新 polling 应用"
