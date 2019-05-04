@@ -49,12 +49,16 @@ podTemplate(label: label, containers: [
     }
     stage('运行 Helm') {
       container('helm') {
-        echo "4.查看 Helm Release 列表"
+        echo "4.1 查看 Helm Release 列表"
         sh "helm list"
-        echo "如果更新了chart包则需要更新repo"
+        echo "4.2 初始化helm client"
+        sh "helm init --client-only"
+        echo "4.3 如果更新了chart包则需要更新repo"
+        sh "helm repo update"
+        echo "4.4 获取chart包"
         sh "helm fetch course/polling"
         sh "tar -xzvf polling-0.1.0.tgz"
-        echo "更新 polling 应用"
+        echo "4.5 更新 polling 应用"
         sh "helm upgrade --install polling polling --set persistence.persistentVolumeClaim.database.storageClass=database --set database.type=internal --set database.internal.database=polling --set database.internal.username=polling --set database.internal.password=polling321 --set api.image.repository=${image} --set api.image.tag=${imageTag} --set api.image.pullSecret=myreg --namespace course"
       }
     }
