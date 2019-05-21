@@ -71,7 +71,7 @@ podTemplate(label: label, containers: [
         throw(exc)
       }
     }
-    container('构建 Docker 镜像') {
+    stage('构建 Docker 镜像') {
       withCredentials([[$class: 'UsernamePasswordMultiBinding',
         credentialsId: 'dockerhub',
         usernameVariable: 'DOCKER_HUB_USER',
